@@ -23,7 +23,13 @@ const fallbackImages = [
   { id: 6, color: '#39FF14', alt: 'Lab Activity 6' },
 ];
 
-export default function GallerySection() {
+interface GalleryImage {
+  id: string;
+  imageUrl: string;
+  caption?: string | null;
+}
+
+export default function GallerySection({ images = [] }: { images?: GalleryImage[] }) {
   const { t } = useLanguage();
 
   return (
@@ -48,58 +54,100 @@ export default function GallerySection() {
 
         {/* Gallery grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {fallbackImages.map((img, index) => (
-            <motion.div
-              key={img.id}
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.1,
-                type: 'spring',
-                stiffness: 100
-              }}
-              whileHover={{ 
-                scale: 1.05, 
-                rotate: 2,
-                zIndex: 10,
-                transition: { duration: 0.3 }
-              }}
-              className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group"
-            >
-              {/* Placeholder with gradient */}
-              <div 
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ 
-                  background: `linear-gradient(135deg, ${img.color}40, ${img.color}80)` 
+          {images.length > 0 ? (
+            images.map((img, index) => (
+              <motion.div
+                key={img.id}
+                initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.1,
+                  type: 'spring',
+                  stiffness: 100
                 }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  rotate: 2,
+                  zIndex: 10,
+                  transition: { duration: 0.3 }
+                }}
+                className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group bg-black/50"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img.imageUrl} alt={img.caption || 'Gallery Image'} className="w-full h-full object-cover" />
+                
+                {/* Hover overlay */}
                 <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                  className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-white/30 flex items-center justify-center"
+                  className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
                 >
-                  <span className="text-white/60 text-xl md:text-2xl font-bold">🔬</span>
+                  <p className="text-white text-sm font-medium leading-tight">{img.caption || 'Asrofi Lab Documentation'}</p>
                 </motion.div>
-              </div>
-              
-              {/* Hover overlay */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
-              >
-                <p className="text-white text-sm font-medium">{img.alt}</p>
-              </motion.div>
 
-              {/* Glow effect on hover */}
+                {/* Glow effect on hover */}
+                <motion.div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    boxShadow: `inset 0 0 30px #39FF1450`,
+                  }}
+                />
+              </motion.div>
+            ))
+          ) : (
+            fallbackImages.map((img, index) => (
               <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  boxShadow: `inset 0 0 30px ${img.color}50`,
+                key={img.id}
+                initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.1,
+                  type: 'spring',
+                  stiffness: 100
                 }}
-              />
-            </motion.div>
-          ))}
+                whileHover={{ 
+                  scale: 1.05, 
+                  rotate: 2,
+                  zIndex: 10,
+                  transition: { duration: 0.3 }
+                }}
+                className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group"
+              >
+                {/* Placeholder with gradient */}
+                <div 
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${img.color}40, ${img.color}80)` 
+                  }}
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-white/30 flex items-center justify-center"
+                  >
+                    <span className="text-white/60 text-xl md:text-2xl font-bold">🔬</span>
+                  </motion.div>
+                </div>
+                
+                {/* Hover overlay */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+                >
+                  <p className="text-white text-sm font-medium">{img.alt}</p>
+                </motion.div>
+
+                {/* Glow effect on hover */}
+                <motion.div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    boxShadow: `inset 0 0 30px ${img.color}50`,
+                  }}
+                />
+              </motion.div>
+            ))
+          )}
         </div>
 
         {/* Decorative elements */}

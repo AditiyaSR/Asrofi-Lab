@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 async function getData() {
   try {
-    const [settings, members, projects, publications] = await Promise.all([
+    const [settings, members, projects, publications, gallery] = await Promise.all([
       db.globalSettings.findFirst(),
       db.teamMember.findMany({
         where: { isActive: true },
@@ -24,6 +24,10 @@ async function getData() {
       db.publication.findMany({
         orderBy: { order: 'asc' },
       }),
+      db.gallery.findMany({
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+      }),
     ]);
 
     return {
@@ -31,6 +35,7 @@ async function getData() {
       members,
       projects,
       publications,
+      gallery,
     };
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -39,12 +44,13 @@ async function getData() {
       members: [],
       projects: [],
       publications: [],
+      gallery: [],
     };
   }
 }
 
 export default async function Home() {
-  const { settings, members, projects, publications } = await getData();
+  const { settings, members, projects, publications, gallery } = await getData();
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -61,7 +67,7 @@ export default async function Home() {
       />
 
       {/* Lab Gallery Section */}
-      <GallerySection />
+      <GallerySection images={gallery} />
 
       {/* Research Projects Section */}
       <ResearchSection projects={projects} />

@@ -16,6 +16,7 @@ import {
   X,
   Loader2,
   Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
@@ -61,7 +62,15 @@ interface Publication {
   order: number;
 }
 
-type Tab = "team" | "projects" | "publications" | "settings";
+interface Gallery {
+  id: string;
+  imageUrl: string;
+  caption?: string | null;
+  order: number;
+  isActive: boolean;
+}
+
+type Tab = "team" | "projects" | "publications" | "settings" | "gallery";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -71,6 +80,7 @@ export default function AdminDashboard() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
+  const [gallery, setGallery] = useState<Gallery[]>([]);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [saving, setSaving] = useState(false);
 
@@ -97,21 +107,24 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [membersRes, projectsRes, pubsRes] = await Promise.all([
+      const [membersRes, projectsRes, pubsRes, galleryRes] = await Promise.all([
         fetch("/api/team-members"),
         fetch("/api/research-projects"),
         fetch("/api/publications"),
+        fetch("/api/gallery"),
       ]);
 
-      const [membersData, projectsData, pubsData] = await Promise.all([
+      const [membersData, projectsData, pubsData, galleryData] = await Promise.all([
         membersRes.json(),
         projectsRes.json(),
         pubsRes.json(),
+        galleryRes.json(),
       ]);
 
       setTeamMembers(membersData);
       setProjects(projectsData);
       setPublications(pubsData);
+      setGallery(galleryData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -172,6 +185,7 @@ export default function AdminDashboard() {
     { id: "team" as Tab, label: "Team Members", icon: Users },
     { id: "projects" as Tab, label: "Research Projects", icon: Beaker },
     { id: "publications" as Tab, label: "Publications", icon: FileText },
+    { id: "gallery" as Tab, label: "Gallery", icon: ImageIcon },
     { id: "settings" as Tab, label: "Settings", icon: Settings },
   ];
 
@@ -445,6 +459,58 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* Gallery Tab */}
+          {activeTab === "gallery" && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Gallery Photos</h2>
+                <button
+                  onClick={() => setEditingItem({ type: "gallery", data: {} })}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#1D7018] rounded-lg
+                           hover:bg-[#2E8B57] transition-colors"
+                >
+                  <Plus size={18} />
+                  Add Photo
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {gallery.map((img) => (
+                  <div key={img.id} className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden group flex flex-col">
+                    <div className="aspect-square relative bg-black/50 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.imageUrl} alt={img.caption || ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    </div>
+                    <div className="p-3 flex-1 flex flex-col justify-between">
+                      <p className="text-sm text-gray-300 line-clamp-2 mb-3">{img.caption || 'No caption'}</p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className={`px-2 py-0.5 rounded text-xs ${
+                            img.isActive ? "bg-[#39FF14]/20 text-[#39FF14]" : "bg-red-500/20 text-red-400"
+                        }`}>
+                          {img.isActive ? "Active" : "Hidden"}
+                        </span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setEditingItem({ type: 'gallery', data: img })}
+                            className="p-1 hover:bg-gray-700 rounded transition-colors"
+                          >
+                            <Edit size={14} className="text-[#39FF14]" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete('gallery', img.id)}
+                            className="p-1 hover:bg-gray-700 rounded transition-colors"
+                          >
+                            <Trash2 size={14} className="text-red-400" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Settings Tab */}
           {activeTab === "settings" && <SettingsPanel />}
         </div>
@@ -636,6 +702,12 @@ function EditModal({
       { name: "doiLink", label: "DOI Link", type: "text" },
       { name: "abstract", label: "Abstract", type: "textarea" },
       { name: "order", label: "Order", type: "number" },
+    ],
+    gallery: [
+      { name: "imageUrl", label: "Upload Photo", type: "image" },
+      { name: "caption", label: "Photo Caption", type: "text" },
+      { name: "order", label: "Display Order", type: "number" },
+      { name: "isActive", label: "Active", type: "checkbox" },
     ],
   };
 
