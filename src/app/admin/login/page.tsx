@@ -30,7 +30,7 @@ export default function AdminLogin() {
       if (res.ok) {
         router.push('/admin');
       } else {
-        setError(data.error || 'Login failed');
+        setError(data.details || data.error || 'Login failed');
       }
     } catch {
       setError('An error occurred. Please try again.');
