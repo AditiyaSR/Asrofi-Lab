@@ -1,0 +1,117 @@
+// This is your Prisma schema file for Asrofi Lab CMS
+// Biocomposite Materials Research Laboratory
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for Research Project Status
+enum ProjectStatus {
+  ONGOING
+  COMPLETED
+}
+
+// Team Member Model
+model TeamMember {
+  id             String   @id @default(cuid())
+  name           String
+  role           String
+  institution    String
+  bio            String
+  avatarUrl      String?
+  linkedinUrl    String?
+  googleScholar  String?
+  order          Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// Research Project Model
+model ResearchProject {
+  id          String        @id @default(cuid())
+  title       String
+  abstract    String
+  coverImage  String?
+  status      ProjectStatus @default(ONGOING)
+  date        DateTime      @default(now())
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// Publication Model
+model Publication {
+  id              String   @id @default(cuid())
+  title           String
+  authors         String
+  journalName     String
+  publicationDate DateTime @default(now())
+  doiLink         String?
+  coverImage      String?
+  abstract        String?
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Global Settings Model
+model GlobalSettings {
+  id           String   @id @default(cuid())
+  siteName     String   @default("Asrofi Laboratorium")
+  heroTitle    String?
+  heroSubtitle String?
+  logoUrl      String?
+  aboutText    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Admin User for authentication
+model AdminUser {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String?
+  role          String   @default("admin")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Session model for NextAuth
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+}
+
+// Account model for NextAuth
+model Account {
+  id                String  @id @default(cuid())
+  compoundId        String  @unique
+  userId            String
+  providerType      String
+  providerId        String
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  accessTokenExpires DateTime?
+  createdAt         DateTime @default(now())
+}
+
+// Verification Token
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
+}
