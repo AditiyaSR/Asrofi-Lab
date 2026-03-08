@@ -1,13 +1,24 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { 
-  Users, Beaker, FileText, Settings, LogOut, 
-  Plus, Edit, Trash2, Save, X, Loader2 
-} from 'lucide-react';
-import Image from 'next/image';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Users,
+  Beaker,
+  FileText,
+  Settings,
+  LogOut,
+  Plus,
+  Edit,
+  Trash2,
+  Save,
+  X,
+  Loader2,
+  Upload,
+} from "lucide-react";
+import Image from "next/image";
+import imageCompression from "browser-image-compression";
 
 interface User {
   id: string;
@@ -50,13 +61,13 @@ interface Publication {
   order: number;
 }
 
-type Tab = 'team' | 'projects' | 'publications' | 'settings';
+type Tab = "team" | "projects" | "publications" | "settings";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>('team');
+  const [activeTab, setActiveTab] = useState<Tab>("team");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -69,16 +80,16 @@ export default function AdminDashboard() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       const data = await res.json();
       if (!data.user) {
-        router.push('/admin/login');
+        router.push("/admin/login");
       } else {
         setUser(data.user);
         fetchData();
       }
     } catch {
-      router.push('/admin/login');
+      router.push("/admin/login");
     } finally {
       setLoading(false);
     }
@@ -87,11 +98,11 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       const [membersRes, projectsRes, pubsRes] = await Promise.all([
-        fetch('/api/team-members'),
-        fetch('/api/research-projects'),
-        fetch('/api/publications'),
+        fetch("/api/team-members"),
+        fetch("/api/research-projects"),
+        fetch("/api/publications"),
       ]);
-      
+
       const [membersData, projectsData, pubsData] = await Promise.all([
         membersRes.json(),
         projectsRes.json(),
@@ -102,24 +113,24 @@ export default function AdminDashboard() {
       setProjects(projectsData);
       setPublications(pubsData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/admin/login");
   };
 
   const handleSave = async (type: string, data: any) => {
     setSaving(true);
     try {
       const url = data.id ? `/api/${type}/${data.id}` : `/api/${type}`;
-      const method = data.id ? 'PUT' : 'POST';
-      
+      const method = data.id ? "PUT" : "POST";
+
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
@@ -128,22 +139,22 @@ export default function AdminDashboard() {
         setEditingItem(null);
       }
     } catch (error) {
-      console.error('Error saving:', error);
+      console.error("Error saving:", error);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (type: string, id: string) => {
-    if (!confirm('Are you sure you want to delete this item?')) return;
-    
+    if (!confirm("Are you sure you want to delete this item?")) return;
+
     try {
-      const res = await fetch(`/api/${type}/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/${type}/${id}`, { method: "DELETE" });
       if (res.ok) {
         fetchData();
       }
     } catch (error) {
-      console.error('Error deleting:', error);
+      console.error("Error deleting:", error);
     }
   };
 
@@ -158,10 +169,10 @@ export default function AdminDashboard() {
   if (!user) return null;
 
   const tabs = [
-    { id: 'team' as Tab, label: 'Team Members', icon: Users },
-    { id: 'projects' as Tab, label: 'Research Projects', icon: Beaker },
-    { id: 'publications' as Tab, label: 'Publications', icon: FileText },
-    { id: 'settings' as Tab, label: 'Settings', icon: Settings },
+    { id: "team" as Tab, label: "Team Members", icon: Users },
+    { id: "projects" as Tab, label: "Research Projects", icon: Beaker },
+    { id: "publications" as Tab, label: "Publications", icon: FileText },
+    { id: "settings" as Tab, label: "Settings", icon: Settings },
   ];
 
   return (
@@ -202,9 +213,10 @@ export default function AdminDashboard() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors
-                ${activeTab === tab.id
-                  ? 'bg-[#1D7018] text-white'
-                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
+                ${
+                  activeTab === tab.id
+                    ? "bg-[#1D7018] text-white"
+                    : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"
                 }`}
             >
               <tab.icon size={18} />
@@ -216,12 +228,14 @@ export default function AdminDashboard() {
         {/* Content */}
         <div className="bg-gray-900/50 rounded-xl border border-[#1D7018]/20 p-6">
           {/* Team Members Tab */}
-          {activeTab === 'team' && (
+          {activeTab === "team" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Team Members</h2>
                 <button
-                  onClick={() => setEditingItem({ type: 'team-members', data: {} })}
+                  onClick={() =>
+                    setEditingItem({ type: "team-members", data: {} })
+                  }
                   className="flex items-center gap-2 px-4 py-2 bg-[#1D7018] rounded-lg
                            hover:bg-[#2E8B57] transition-colors"
                 >
@@ -234,38 +248,64 @@ export default function AdminDashboard() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-800">
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Role</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Institution</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                      <th className="text-right py-3 px-4 text-gray-400 font-medium">Actions</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        Name
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        Role
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        Institution
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        Status
+                      </th>
+                      <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {teamMembers.map((member) => (
-                      <tr key={member.id} className="border-b border-gray-800/50 hover:bg-gray-800/30">
+                      <tr
+                        key={member.id}
+                        className="border-b border-gray-800/50 hover:bg-gray-800/30"
+                      >
                         <td className="py-3 px-4">{member.name}</td>
-                        <td className="py-3 px-4 text-gray-400">{member.role}</td>
-                        <td className="py-3 px-4 text-gray-400">{member.institution}</td>
+                        <td className="py-3 px-4 text-gray-400">
+                          {member.role}
+                        </td>
+                        <td className="py-3 px-4 text-gray-400">
+                          {member.institution}
+                        </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            member.isActive 
-                              ? 'bg-[#39FF14]/20 text-[#39FF14]' 
-                              : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {member.isActive ? 'Active' : 'Inactive'}
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              member.isActive
+                                ? "bg-[#39FF14]/20 text-[#39FF14]"
+                                : "bg-red-500/20 text-red-400"
+                            }`}
+                          >
+                            {member.isActive ? "Active" : "Inactive"}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
-                              onClick={() => setEditingItem({ type: 'team-members', data: member })}
+                              onClick={() =>
+                                setEditingItem({
+                                  type: "team-members",
+                                  data: member,
+                                })
+                              }
                               className="p-2 hover:bg-gray-700 rounded transition-colors"
                             >
                               <Edit size={16} className="text-[#39FF14]" />
                             </button>
                             <button
-                              onClick={() => handleDelete('team-members', member.id)}
+                              onClick={() =>
+                                handleDelete("team-members", member.id)
+                              }
                               className="p-2 hover:bg-gray-700 rounded transition-colors"
                             >
                               <Trash2 size={16} className="text-red-400" />
@@ -281,12 +321,14 @@ export default function AdminDashboard() {
           )}
 
           {/* Projects Tab */}
-          {activeTab === 'projects' && (
+          {activeTab === "projects" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Research Projects</h2>
                 <button
-                  onClick={() => setEditingItem({ type: 'research-projects', data: {} })}
+                  onClick={() =>
+                    setEditingItem({ type: "research-projects", data: {} })
+                  }
                   className="flex items-center gap-2 px-4 py-2 bg-[#1D7018] rounded-lg
                            hover:bg-[#2E8B57] transition-colors"
                 >
@@ -297,30 +339,44 @@ export default function AdminDashboard() {
 
               <div className="grid gap-4">
                 {projects.map((project) => (
-                  <div key={project.id} className="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                  <div
+                    key={project.id}
+                    className="bg-gray-800/30 rounded-lg p-4 border border-gray-700"
+                  >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold">{project.title}</h3>
-                          <span className={`px-2 py-0.5 rounded text-xs ${
-                            project.status === 'ONGOING'
-                              ? 'bg-[#39FF14]/20 text-[#39FF14]'
-                              : 'bg-[#1D7018]/20 text-[#1D7018]'
-                          }`}>
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs ${
+                              project.status === "ONGOING"
+                                ? "bg-[#39FF14]/20 text-[#39FF14]"
+                                : "bg-[#1D7018]/20 text-[#1D7018]"
+                            }`}
+                          >
                             {project.status}
                           </span>
                         </div>
-                        <p className="text-gray-400 text-sm line-clamp-2">{project.abstract}</p>
+                        <p className="text-gray-400 text-sm line-clamp-2">
+                          {project.abstract}
+                        </p>
                       </div>
                       <div className="flex gap-2 ml-4">
                         <button
-                          onClick={() => setEditingItem({ type: 'research-projects', data: project })}
+                          onClick={() =>
+                            setEditingItem({
+                              type: "research-projects",
+                              data: project,
+                            })
+                          }
                           className="p-2 hover:bg-gray-700 rounded transition-colors"
                         >
                           <Edit size={16} className="text-[#39FF14]" />
                         </button>
                         <button
-                          onClick={() => handleDelete('research-projects', project.id)}
+                          onClick={() =>
+                            handleDelete("research-projects", project.id)
+                          }
                           className="p-2 hover:bg-gray-700 rounded transition-colors"
                         >
                           <Trash2 size={16} className="text-red-400" />
@@ -334,12 +390,14 @@ export default function AdminDashboard() {
           )}
 
           {/* Publications Tab */}
-          {activeTab === 'publications' && (
+          {activeTab === "publications" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Publications</h2>
                 <button
-                  onClick={() => setEditingItem({ type: 'publications', data: {} })}
+                  onClick={() =>
+                    setEditingItem({ type: "publications", data: {} })
+                  }
                   className="flex items-center gap-2 px-4 py-2 bg-[#1D7018] rounded-lg
                            hover:bg-[#2E8B57] transition-colors"
                 >
@@ -350,22 +408,31 @@ export default function AdminDashboard() {
 
               <div className="grid gap-4">
                 {publications.map((pub) => (
-                  <div key={pub.id} className="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                  <div
+                    key={pub.id}
+                    className="bg-gray-800/30 rounded-lg p-4 border border-gray-700"
+                  >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="font-semibold mb-1">{pub.title}</h3>
-                        <p className="text-gray-400 text-sm mb-2">{pub.authors}</p>
-                        <p className="text-[#1D7018] text-sm">{pub.journalName}</p>
+                        <p className="text-gray-400 text-sm mb-2">
+                          {pub.authors}
+                        </p>
+                        <p className="text-[#1D7018] text-sm">
+                          {pub.journalName}
+                        </p>
                       </div>
                       <div className="flex gap-2 ml-4">
                         <button
-                          onClick={() => setEditingItem({ type: 'publications', data: pub })}
+                          onClick={() =>
+                            setEditingItem({ type: "publications", data: pub })
+                          }
                           className="p-2 hover:bg-gray-700 rounded transition-colors"
                         >
                           <Edit size={16} className="text-[#39FF14]" />
                         </button>
                         <button
-                          onClick={() => handleDelete('publications', pub.id)}
+                          onClick={() => handleDelete("publications", pub.id)}
                           className="p-2 hover:bg-gray-700 rounded transition-colors"
                         >
                           <Trash2 size={16} className="text-red-400" />
@@ -379,9 +446,7 @@ export default function AdminDashboard() {
           )}
 
           {/* Settings Tab */}
-          {activeTab === 'settings' && (
-            <SettingsPanel />
-          )}
+          {activeTab === "settings" && <SettingsPanel />}
         </div>
       </div>
 
@@ -401,10 +466,10 @@ export default function AdminDashboard() {
 
 function SettingsPanel() {
   const [settings, setSettings] = useState({
-    siteName: '',
-    heroTitle: '',
-    heroSubtitle: '',
-    aboutText: '',
+    siteName: "",
+    heroTitle: "",
+    heroSubtitle: "",
+    aboutText: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -415,25 +480,25 @@ function SettingsPanel() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch("/api/settings");
       const data = await res.json();
       setSettings({
-        siteName: data.siteName || '',
-        heroTitle: data.heroTitle || '',
-        heroSubtitle: data.heroSubtitle || '',
-        aboutText: data.aboutText || '',
+        siteName: data.siteName || "",
+        heroTitle: data.heroTitle || "",
+        heroSubtitle: data.heroSubtitle || "",
+        aboutText: data.aboutText || "",
       });
     } catch (error) {
-      console.error('Error fetching settings:', error);
+      console.error("Error fetching settings:", error);
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
       });
       if (res.ok) {
@@ -441,7 +506,7 @@ function SettingsPanel() {
         setTimeout(() => setSaved(false), 2000);
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error("Error saving settings:", error);
     } finally {
       setSaving(false);
     }
@@ -462,7 +527,7 @@ function SettingsPanel() {
           ) : (
             <Save size={18} />
           )}
-          {saved ? 'Saved!' : 'Save Changes'}
+          {saved ? "Saved!" : "Save Changes"}
         </button>
       </div>
 
@@ -472,7 +537,9 @@ function SettingsPanel() {
           <input
             type="text"
             value={settings.siteName}
-            onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+            onChange={(e) =>
+              setSettings({ ...settings, siteName: e.target.value })
+            }
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                      focus:border-[#39FF14] focus:outline-none transition-colors"
           />
@@ -483,7 +550,9 @@ function SettingsPanel() {
           <input
             type="text"
             value={settings.heroTitle}
-            onChange={(e) => setSettings({ ...settings, heroTitle: e.target.value })}
+            onChange={(e) =>
+              setSettings({ ...settings, heroTitle: e.target.value })
+            }
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                      focus:border-[#39FF14] focus:outline-none transition-colors"
           />
@@ -494,7 +563,9 @@ function SettingsPanel() {
           <input
             type="text"
             value={settings.heroSubtitle}
-            onChange={(e) => setSettings({ ...settings, heroSubtitle: e.target.value })}
+            onChange={(e) =>
+              setSettings({ ...settings, heroSubtitle: e.target.value })
+            }
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                      focus:border-[#39FF14] focus:outline-none transition-colors"
           />
@@ -504,7 +575,9 @@ function SettingsPanel() {
           <label className="block text-gray-400 mb-2">About Text</label>
           <textarea
             value={settings.aboutText}
-            onChange={(e) => setSettings({ ...settings, aboutText: e.target.value })}
+            onChange={(e) =>
+              setSettings({ ...settings, aboutText: e.target.value })
+            }
             rows={4}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                      focus:border-[#39FF14] focus:outline-none transition-colors resize-none"
@@ -515,7 +588,13 @@ function SettingsPanel() {
   );
 }
 
-function EditModal({ type, data, onSave, onClose, saving }: {
+function EditModal({
+  type,
+  data,
+  onSave,
+  onClose,
+  saving,
+}: {
   type: string;
   data: any;
   onSave: (type: string, data: any) => void;
@@ -525,33 +604,38 @@ function EditModal({ type, data, onSave, onClose, saving }: {
   const [formData, setFormData] = useState(data);
 
   const fields = {
-    'team-members': [
-      { name: 'name', label: 'Name', type: 'text' },
-      { name: 'role', label: 'Role', type: 'text' },
-      { name: 'institution', label: 'Institution', type: 'text' },
-      { name: 'bio', label: 'Bio', type: 'textarea' },
-      { name: 'avatarUrl', label: 'Avatar URL', type: 'text' },
-      { name: 'linkedinUrl', label: 'LinkedIn URL', type: 'text' },
-      { name: 'googleScholar', label: 'Google Scholar URL', type: 'text' },
-      { name: 'order', label: 'Order', type: 'number' },
-      { name: 'isActive', label: 'Active', type: 'checkbox' },
+    "team-members": [
+      { name: "name", label: "Name", type: "text" },
+      { name: "role", label: "Role", type: "text" },
+      { name: "institution", label: "Institution", type: "text" },
+      { name: "bio", label: "Bio", type: "textarea" },
+      { name: "avatarUrl", label: "Avatar Image", type: "image" },
+      { name: "linkedinUrl", label: "LinkedIn URL", type: "text" },
+      { name: "googleScholar", label: "Google Scholar URL", type: "text" },
+      { name: "order", label: "Order", type: "number" },
+      { name: "isActive", label: "Active", type: "checkbox" },
     ],
-    'research-projects': [
-      { name: 'title', label: 'Title', type: 'text' },
-      { name: 'abstract', label: 'Abstract', type: 'textarea' },
-      { name: 'coverImage', label: 'Cover Image URL', type: 'text' },
-      { name: 'status', label: 'Status', type: 'select', options: ['ONGOING', 'COMPLETED'] },
-      { name: 'date', label: 'Date', type: 'date' },
-      { name: 'order', label: 'Order', type: 'number' },
+    "research-projects": [
+      { name: "title", label: "Title", type: "text" },
+      { name: "abstract", label: "Abstract", type: "textarea" },
+      { name: "coverImage", label: "Cover Image", type: "image" },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["ONGOING", "COMPLETED"],
+      },
+      { name: "date", label: "Date", type: "date" },
+      { name: "order", label: "Order", type: "number" },
     ],
-    'publications': [
-      { name: 'title', label: 'Title', type: 'text' },
-      { name: 'authors', label: 'Authors', type: 'text' },
-      { name: 'journalName', label: 'Journal Name', type: 'text' },
-      { name: 'publicationDate', label: 'Publication Date', type: 'date' },
-      { name: 'doiLink', label: 'DOI Link', type: 'text' },
-      { name: 'abstract', label: 'Abstract', type: 'textarea' },
-      { name: 'order', label: 'Order', type: 'number' },
+    publications: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "authors", label: "Authors", type: "text" },
+      { name: "journalName", label: "Journal Name", type: "text" },
+      { name: "publicationDate", label: "Publication Date", type: "date" },
+      { name: "doiLink", label: "DOI Link", type: "text" },
+      { name: "abstract", label: "Abstract", type: "textarea" },
+      { name: "order", label: "Order", type: "number" },
     ],
   };
 
@@ -566,9 +650,12 @@ function EditModal({ type, data, onSave, onClose, saving }: {
       >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold">
-            {data.id ? 'Edit' : 'Add New'} {type.replace('-', ' ').slice(0, -1)}
+            {data.id ? "Edit" : "Add New"} {type.replace("-", " ").slice(0, -1)}
           </h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-700 rounded transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
@@ -577,44 +664,67 @@ function EditModal({ type, data, onSave, onClose, saving }: {
           {currentFields.map((field) => (
             <div key={field.name}>
               <label className="block text-gray-400 mb-2">{field.label}</label>
-              {field.type === 'textarea' ? (
+              {field.type === "textarea" ? (
                 <textarea
-                  value={formData[field.name] || ''}
-                  onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                  value={formData[field.name] || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [field.name]: e.target.value })
+                  }
                   rows={3}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                            focus:border-[#39FF14] focus:outline-none transition-colors resize-none"
                 />
-              ) : field.type === 'select' ? (
+              ) : field.type === "select" ? (
                 <select
-                  value={formData[field.name] || ''}
-                  onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                  value={formData[field.name] || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [field.name]: e.target.value })
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                            focus:border-[#39FF14] focus:outline-none transition-colors"
                 >
                   {field.options?.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
                   ))}
                 </select>
-              ) : field.type === 'checkbox' ? (
+              ) : field.type === "checkbox" ? (
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData[field.name] ?? true}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [field.name]: e.target.checked,
+                      })
+                    }
                     className="w-5 h-5 rounded border-gray-700 bg-gray-800 
                              checked:bg-[#1D7018] checked:border-[#39FF14]"
                   />
                   <span className="text-gray-300">Active</span>
                 </label>
+              ) : field.type === "image" ? (
+                <ImageUploadField
+                  value={formData[field.name] || ""}
+                  onChange={(val) =>
+                    setFormData({ ...formData, [field.name]: val })
+                  }
+                />
               ) : (
                 <input
                   type={field.type}
-                  value={formData[field.name] || ''}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    [field.name]: field.type === 'number' ? parseInt(e.target.value) || 0 : e.target.value 
-                  })}
+                  value={formData[field.name] || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [field.name]:
+                        field.type === "number"
+                          ? parseInt(e.target.value) || 0
+                          : e.target.value,
+                    })
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                            focus:border-[#39FF14] focus:outline-none transition-colors"
                 />
@@ -645,6 +755,83 @@ function EditModal({ type, data, onSave, onClose, saving }: {
           </button>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+function ImageUploadField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+}) {
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsCompressing(true);
+    try {
+      const options = {
+        maxSizeMB: 0.1, // Max ~100KB
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      // Convert to Base64 Data URI
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        onChange(base64data);
+      };
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      alert("Failed to compress image.");
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  return (
+    <div className="relative border-2 border-dashed border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-800/50 hover:bg-gray-800 transition-colors cursor-pointer group">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+      />
+      {isCompressing ? (
+        <div className="flex flex-col items-center gap-2 text-gray-400 py-8">
+          <Loader2 size={24} className="animate-spin text-[#39FF14]" />
+          <span className="text-sm">Compressing to save space...</span>
+        </div>
+      ) : value ? (
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden flex items-center justify-center bg-black/50">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            alt="Preview"
+            className="max-h-full max-w-full object-contain"
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Upload size={24} className="text-white mb-2" />
+            <span className="text-sm text-white">Click or drag to replace</span>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2 text-gray-400 py-8">
+          <Upload size={24} />
+          <span className="text-sm font-medium">Click or Drag image here</span>
+          <span className="text-xs text-gray-500">
+            Auto-compressed to &lt;100KB
+          </span>
+        </div>
+      )}
     </div>
   );
 }
