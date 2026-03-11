@@ -18,46 +18,45 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background gradient */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Premium Aurora Gradient Background */}
-        <div className="absolute inset-0 opacity-40 dark:opacity-30 mix-blend-screen overflow-hidden pointer-events-none">
+        {/* Premium Aurora Gradient Background - Hardware Accelerated */}
+        <div className="absolute inset-0 opacity-30 mix-blend-screen overflow-hidden pointer-events-none" style={{ transform: 'translateZ(0)' }}>
           <div 
-            className="absolute -inset-[100%] opacity-50 animate-aurora"
+            className="absolute -inset-[100%] opacity-40 animate-aurora"
             style={{
               backgroundImage: 'repeating-linear-gradient(100deg, #fff 0%, #fff 7%, transparent 10%, transparent 12%, #fff 16%), repeating-linear-gradient(100deg, #39FF14 10%, #1D7018 15%, transparent 20%, transparent 25%, #39FF14 30%)',
               backgroundSize: '200% 200%',
-              filter: 'blur(60px)',
+              filter: 'blur(30px)',
+              willChange: 'background-position',
             }}
           />
         </div>
 
-        {/* Gradient orbs (Biocomposite theme) */}
+        {/* Gradient orbs (Biocomposite theme) - Removed heavy CSS blur for performance */}
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full opacity-30 dark:opacity-20 mix-blend-screen"
+          className="absolute w-[800px] h-[800px] rounded-full opacity-20 mix-blend-screen pointer-events-none"
           style={{
             background: 'radial-gradient(circle, rgba(57, 255, 20, 0.4) 0%, transparent 60%)',
             top: '-20%',
             right: '-10%',
-            filter: 'blur(80px)'
           }}
           animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, -30, 0],
+            scale: [1, 1.1, 1],
+            x: [0, 30, 0],
+            y: [0, -20, 0],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-[600px] h-[600px] rounded-full opacity-30 dark:opacity-10 mix-blend-screen"
+          className="absolute w-[600px] h-[600px] rounded-full opacity-20 mix-blend-screen pointer-events-none"
           style={{
             background: 'radial-gradient(circle, rgba(29, 112, 24, 0.5) 0%, transparent 70%)',
             bottom: '-10%',
             left: '-5%',
-            filter: 'blur(80px)'
           }}
           animate={{
-            scale: [1, 1.3, 1],
-            x: [0, -30, 0],
-            y: [0, 40, 0],
+            scale: [1, 1.2, 1],
+            x: [0, -20, 0],
+            y: [0, 30, 0],
           }}
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -160,9 +159,9 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
         </svg>
       </motion.div>
 
-      {/* Main content - Ultra Glassmorphism */}
+      {/* Main content - Ultra Glassmorphism - Lowered Backdrop Blur to 24px (xl) for framerate */}
       <div className="relative z-10 text-center px-4 max-w-6xl mx-auto w-full
-                      bg-white/10 dark:bg-black/10 backdrop-blur-[40px] rounded-[3rem] p-10 md:p-16
+                      bg-white/10 dark:bg-black/10 backdrop-blur-xl rounded-[3rem] p-10 md:p-16
                       border border-white/30 dark:border-[#39FF14]/20 shadow-[0_35px_60px_-15px_rgba(29,112,24,0.3)]
                       overflow-hidden noise">
         {/* Inner glow border */}
@@ -182,16 +181,14 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
         >
           <motion.div
             animate={{ 
-              y: [0, -15, 0],
-              filter: [
-                'drop-shadow(0 0 20px rgba(57, 255, 20, 0.3))',
-                'drop-shadow(0 0 40px rgba(57, 255, 20, 0.5))',
-                'drop-shadow(0 0 20px rgba(57, 255, 20, 0.3))'
-              ]
+              y: [0, -10, 0],
+              scale: [1, 1.02, 1]
             }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="inline-block"
+            className="inline-block relative"
           >
+            {/* Cheap glow effect without expensive CSS drop-shadow filters */}
+            <div className="absolute inset-0 bg-[#39FF14]/20 blur-2xl rounded-full scale-75" />
             <Image
               src={logoUrl || "/logo.png"}
               alt="Asrofi Lab Logo"

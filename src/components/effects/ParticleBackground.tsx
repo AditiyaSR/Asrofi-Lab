@@ -26,8 +26,8 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
   const createParticles = useCallback((width: number, height: number) => {
     const particles: Particle[] = [];
-    // Increase density slightly for a more full organic feel
-    const particleCount = Math.min(80, Math.floor((width * height) / 15000));
+    // Reduce density for better performance on large screens
+    const particleCount = Math.min(50, Math.floor((width * height) / 25000));
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -155,33 +155,18 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
         if (particle.y < -50) particle.y = canvas.height + 50;
         if (particle.y > canvas.height + 50) particle.y = -50;
 
-        // Draw particle (Cell / Spore)
-        const glowOpacity = particle.opacity * (0.5 + spotlightMulti * 2); // Glow brighter near mouse
+        // Draw particle (Cell / Spore) - Optimized: Avoid createRadialGradient
+        const glowOpacity = Math.min(1, particle.opacity * (0.5 + spotlightMulti * 2)); // Glow brighter near mouse
         const baseSize = particle.size * (1 + spotlightMulti * 0.5); // Slightly larger near mouse
 
-        const gradient = ctx.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          baseSize * 3 // Larger glow
-        );
-
-        if (particle.type === 'node') {
-          gradient.addColorStop(0, `rgba(${accentColor}, ${glowOpacity})`);
-          gradient.addColorStop(0.5, `rgba(${accentColor}, ${glowOpacity * 0.5})`);
-          gradient.addColorStop(1, `rgba(${accentColor}, 0)`);
-        } else {
-          gradient.addColorStop(0, `rgba(${primaryColor}, ${glowOpacity})`);
-          gradient.addColorStop(1, `rgba(${primaryColor}, 0)`);
-        }
-
-        ctx.beginPath();
-        ctx.fillStyle = gradient;
         // Make the cells pulsate slightly
         const pulsate = Math.sin(Date.now() * 0.002 + idx) * 0.5 + 1;
-        ctx.arc(particle.x, particle.y, baseSize * 2 * (particle.type === 'node' ? pulsate : 1), 0, Math.PI * 2);
+        const currentSize = baseSize * (particle.type === 'node' ? pulsate : 1);
+
+        // Simple flat fill for much better performance than gradients
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${particle.type === 'node' ? accentColor : primaryColor}, ${glowOpacity})`;
+        ctx.arc(particle.x, particle.y, currentSize, 0, Math.PI * 2);
         ctx.fill();
 
         // Draw geometric / cellular nucleus for nodes
