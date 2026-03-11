@@ -18,34 +18,48 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background gradient */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Gradient orbs */}
+        {/* Premium Aurora Gradient Background */}
+        <div className="absolute inset-0 opacity-40 dark:opacity-30 mix-blend-screen overflow-hidden pointer-events-none">
+          <div 
+            className="absolute -inset-[100%] opacity-50 animate-aurora"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(100deg, #fff 0%, #fff 7%, transparent 10%, transparent 12%, #fff 16%), repeating-linear-gradient(100deg, #39FF14 10%, #1D7018 15%, transparent 20%, transparent 25%, #39FF14 30%)',
+              backgroundSize: '200% 200%',
+              filter: 'blur(60px)',
+            }}
+          />
+        </div>
+
+        {/* Gradient orbs (Biocomposite theme) */}
         <motion.div
-          className="absolute w-[600px] h-[600px] rounded-full opacity-30 dark:opacity-20"
+          className="absolute w-[800px] h-[800px] rounded-full opacity-30 dark:opacity-20 mix-blend-screen"
           style={{
-            background: 'radial-gradient(circle, rgba(57, 255, 20, 0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(57, 255, 20, 0.4) 0%, transparent 60%)',
             top: '-20%',
             right: '-10%',
+            filter: 'blur(80px)'
           }}
           animate={{
             scale: [1, 1.2, 1],
             x: [0, 50, 0],
             y: [0, -30, 0],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-10"
+          className="absolute w-[600px] h-[600px] rounded-full opacity-30 dark:opacity-10 mix-blend-screen"
           style={{
-            background: 'radial-gradient(circle, rgba(29, 112, 24, 0.4) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(29, 112, 24, 0.5) 0%, transparent 70%)',
             bottom: '-10%',
             left: '-5%',
+            filter: 'blur(80px)'
           }}
           animate={{
             scale: [1, 1.3, 1],
             x: [0, -30, 0],
             y: [0, 40, 0],
           }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         {/* Hexagon pattern */}
@@ -146,10 +160,14 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
         </svg>
       </motion.div>
 
-      {/* Main content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto
-                      bg-white/30 dark:bg-black/20 backdrop-blur-xl rounded-3xl p-8 md:p-12
-                      border border-white/20 dark:border-[#39FF14]/10 shadow-2xl">
+      {/* Main content - Ultra Glassmorphism */}
+      <div className="relative z-10 text-center px-4 max-w-6xl mx-auto w-full
+                      bg-white/10 dark:bg-black/10 backdrop-blur-[40px] rounded-[3rem] p-10 md:p-16
+                      border border-white/30 dark:border-[#39FF14]/20 shadow-[0_35px_60px_-15px_rgba(29,112,24,0.3)]
+                      overflow-hidden noise">
+        {/* Inner glow border */}
+        <div className="absolute inset-0 rounded-[3rem] border-2 border-transparent" 
+             style={{ background: 'linear-gradient(135deg, rgba(57,255,20,0.5), transparent, rgba(29,112,24,0.5)) border-box', WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
         {/* Logo */}
         <motion.div
           initial={{ scale: 0, opacity: 0, rotate: -180 }}
@@ -187,39 +205,41 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
         </motion.div>
 
         {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight"
-        >
-          {heroTitle || (
-            <>
-              <motion.span 
-                className="text-[#1D7018] inline-block"
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {t.hero.titleHighlight1}
-              </motion.span>{' '}
-              {t.hero.title}{' '}
-              <motion.span 
-                className="text-[#39FF14] inline-block"
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-              >
-                {t.hero.titleHighlight2}
-              </motion.span>
-            </>
-          )}
-        </motion.h1>
+        <div className="overflow-hidden mb-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 100, rotate: 5 }}
+            animate={{ opacity: 1, y: 0, rotate: 0 }}
+            transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-gray-400 tracking-tighter leading-tight"
+          >
+            {heroTitle ? (
+              <span className="animate-text-reveal block">{heroTitle}</span>
+            ) : (
+              <>
+                <motion.span 
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-[#1D7018] to-[#2E8B57] inline-block"
+                  whileHover={{ scale: 1.05, rotate: -2 }}
+                >
+                  {t.hero.titleHighlight1}
+                </motion.span>{' '}
+                {t.hero.title}{' '}
+                <motion.span 
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-[#2E8B57] to-[#39FF14] inline-block drop-shadow-[0_0_15px_rgba(57,255,20,0.5)]"
+                  whileHover={{ scale: 1.05, rotate: 2 }}
+                >
+                  {t.hero.titleHighlight2}
+                </motion.span>
+              </>
+            )}
+          </motion.h1>
+        </div>
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto"
+          initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
+          className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 mb-14 max-w-3xl mx-auto font-medium"
         >
           {heroSubtitle || t.hero.subtitle}
         </motion.p>

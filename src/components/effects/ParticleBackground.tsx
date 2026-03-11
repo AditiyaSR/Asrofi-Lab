@@ -85,17 +85,29 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
           // Increased connection distance for more mesh-like structure
           if (distance < 180) {
-            const opacity = (1 - distance / 180) * (isDark ? 0.2 : 0.15);
+            // Mouse distance to edge midpoint for spotlight effect
+            const midX = (particles[i].x + particles[j].x) / 2;
+            const midY = (particles[i].y + particles[j].y) / 2;
+            const mouseDx = mouseRef.current.x - midX;
+            const mouseDy = mouseRef.current.y - midY;
+            const mouseDist = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
+            
+            // Spotlight glow multiplier
+            const spotlightMulti = Math.max(0.1, 1 - mouseDist / 400); // 1 near mouse, drops to 0.1
+            
+            const baseOpacity = (1 - distance / 180);
+            const opacity = baseOpacity * (isDark ? 0.3 : 0.25) * (0.5 + spotlightMulti * 1.5);
+
             ctx.beginPath();
             ctx.strokeStyle = `rgba(${primaryColor}, ${opacity})`;
-            ctx.lineWidth = particles[i].type === 'node' && particles[j].type === 'node' ? 1.5 : 0.5; // Thicker fibers between nodes
+            ctx.lineWidth = (particles[i].type === 'node' && particles[j].type === 'node' ? 1.5 : 0.5) * (1 + spotlightMulti); // Thicker fibers between nodes and near mouse
             
             // Draw slightly curved lines for organic feel
-            const midX = (particles[i].x + particles[j].x) / 2 + Math.sin(Date.now() * 0.001 + i) * 10;
-            const midY = (particles[i].y + particles[j].y) / 2 + Math.cos(Date.now() * 0.001 + j) * 10;
+            const cMidX = midX + Math.sin(Date.now() * 0.001 + i) * 10;
+            const cMidY = midY + Math.cos(Date.now() * 0.001 + j) * 10;
             
             ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.quadraticCurveTo(midX, midY, particles[j].x, particles[j].y);
+            ctx.quadraticCurveTo(cMidX, cMidY, particles[j].x, particles[j].y);
             ctx.stroke();
           }
         }
@@ -103,10 +115,12 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
       // Draw and update particles
       particles.forEach((particle, idx) => {
-        // Mouse interaction (Repulsion / Attraction)
+        // Mouse interaction (Repulsion / Attraction & Spotlight)
         const dx = mouseRef.current.x - particle.x;
         const dy = mouseRef.current.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        const spotlightMulti = Math.max(0.2, 1 - distance / 350);
 
         if (distance < 250) {
           // Gently push particles away but add a swirling motion
@@ -142,21 +156,24 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
         if (particle.y > canvas.height + 50) particle.y = -50;
 
         // Draw particle (Cell / Spore)
+        const glowOpacity = particle.opacity * (0.5 + spotlightMulti * 2); // Glow brighter near mouse
+        const baseSize = particle.size * (1 + spotlightMulti * 0.5); // Slightly larger near mouse
+
         const gradient = ctx.createRadialGradient(
           particle.x,
           particle.y,
           0,
           particle.x,
           particle.y,
-          particle.size * 2.5 // Slightly larger glow
+          baseSize * 3 // Larger glow
         );
 
         if (particle.type === 'node') {
-          gradient.addColorStop(0, `rgba(${accentColor}, ${particle.opacity})`);
-          gradient.addColorStop(0.5, `rgba(${accentColor}, ${particle.opacity * 0.5})`);
+          gradient.addColorStop(0, `rgba(${accentColor}, ${glowOpacity})`);
+          gradient.addColorStop(0.5, `rgba(${accentColor}, ${glowOpacity * 0.5})`);
           gradient.addColorStop(1, `rgba(${accentColor}, 0)`);
         } else {
-          gradient.addColorStop(0, `rgba(${primaryColor}, ${particle.opacity})`);
+          gradient.addColorStop(0, `rgba(${primaryColor}, ${glowOpacity})`);
           gradient.addColorStop(1, `rgba(${primaryColor}, 0)`);
         }
 
@@ -164,7 +181,7 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
         ctx.fillStyle = gradient;
         // Make the cells pulsate slightly
         const pulsate = Math.sin(Date.now() * 0.002 + idx) * 0.5 + 1;
-        ctx.arc(particle.x, particle.y, particle.size * 2 * (particle.type === 'node' ? pulsate : 1), 0, Math.PI * 2);
+        ctx.arc(particle.x, particle.y, baseSize * 2 * (particle.type === 'node' ? pulsate : 1), 0, Math.PI * 2);
         ctx.fill();
 
         // Draw geometric / cellular nucleus for nodes

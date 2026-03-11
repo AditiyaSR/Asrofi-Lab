@@ -17,6 +17,9 @@ import {
   Loader2,
   Upload,
   Image as ImageIcon,
+  LayoutDashboard,
+  Activity,
+  Award
 } from "lucide-react";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
@@ -70,13 +73,13 @@ interface Gallery {
   isActive: boolean;
 }
 
-type Tab = "team" | "projects" | "publications" | "settings" | "gallery";
+type Tab = "overview" | "team" | "projects" | "publications" | "settings" | "gallery";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>("team");
+  const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -182,6 +185,7 @@ export default function AdminDashboard() {
   if (!user) return null;
 
   const tabs = [
+    { id: "overview" as Tab, label: "Overview", icon: LayoutDashboard },
     { id: "team" as Tab, label: "Team Members", icon: Users },
     { id: "projects" as Tab, label: "Research Projects", icon: Beaker },
     { id: "publications" as Tab, label: "Publications", icon: FileText },
@@ -190,9 +194,19 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative flex flex-col noise">
+      {/* Premium Aurora Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -inset-[100%] opacity-20 animate-aurora"
+             style={{
+               backgroundImage: 'repeating-linear-gradient(100deg, #fff 0%, #fff 7%, transparent 10%, transparent 12%, #fff 16%), repeating-linear-gradient(100deg, #39FF14 10%, #1D7018 15%, transparent 20%, transparent 25%, #39FF14 30%)',
+               backgroundSize: '200% 200%',
+               filter: 'blur(80px)',
+             }} />
+      </div>
+
       {/* Header */}
-      <header className="bg-black/80 backdrop-blur-md border-b border-[#1D7018]/30 sticky top-0 z-50">
+      <header className="bg-black/40 backdrop-blur-[40px] border-b border-[#39FF14]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image
@@ -217,30 +231,89 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors
-                ${
-                  activeTab === tab.id
-                    ? "bg-[#1D7018] text-white"
-                    : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"
-                }`}
-            >
-              <tab.icon size={18} />
-              {tab.label}
-            </motion.button>
-          ))}
-        </div>
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 relative z-10 flex flex-col md:flex-row gap-8">
+        
+        {/* Sidebar Tabs (Bento Style) */}
+        <aside className="w-full md:w-64 shrink-0">
+          <div className="flex flex-col gap-3 bg-white/5 dark:bg-black/40 backdrop-blur-[40px] rounded-[2rem] p-4 border border-white/10 shadow-[0_0_40px_rgba(57,255,20,0.05)] sticky top-24">
+            {tabs.map((tab) => (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                whileHover={{ scale: 1.02, x: 5 }}
+                whileTap={{ scale: 0.98 }}
+                className={`relative flex items-center gap-3 px-5 py-3 rounded-xl overflow-hidden transition-all duration-300 font-medium
+                  ${
+                    activeTab === tab.id
+                      ? "text-black shadow-[0_0_20px_rgba(57,255,20,0.3)]"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}
+              >
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute inset-0 bg-gradient-to-r from-[#39FF14] to-[#1D7018]"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-3">
+                  <tab.icon size={18} />
+                  {tab.label}
+                </span>
+              </motion.button>
+            ))}
+          </div>
+        </aside>
 
-        {/* Content */}
-        <div className="bg-gray-900/50 rounded-xl border border-[#1D7018]/20 p-6">
+        {/* Content Area */}
+        <main className="flex-1 bg-white/5 dark:bg-black/40 backdrop-blur-[40px] rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_rgba(29,112,24,0.1)] p-8 md:p-10 relative overflow-hidden">
+          {/* Subtle inner glow for content area */}
+          <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#39FF14]/5 to-transparent pointer-events-none" />
+
+          <div className="relative z-10">
+            {/* Overview Tab (Bento Grid) */}
+            {activeTab === "overview" && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500 mb-8">Dashboard Overview</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[180px]">
+                  {/* Stats Cards (Bento) */}
+                  <motion.div whileHover={{ y: -5 }} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#39FF14]/20 rounded-full blur-[40px] group-hover:bg-[#39FF14]/40 transition-colors duration-500" />
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Users className="text-[#39FF14]" /> <span className="font-medium tracking-wide text-sm uppercase">Total Members</span>
+                    </div>
+                    <div className="text-6xl font-black text-white">{teamMembers.length}</div>
+                  </motion.div>
+                  
+                  <motion.div whileHover={{ y: -5 }} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#1D7018]/30 rounded-full blur-[40px] group-hover:bg-[#1D7018]/50 transition-colors duration-500" />
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Beaker className="text-[#39FF14]" /> <span className="font-medium tracking-wide text-sm uppercase">Projects (Ongoing)</span>
+                    </div>
+                    <div className="text-6xl font-black text-white">{projects.filter(p => p.status === 'ONGOING').length}</div>
+                  </motion.div>
+
+                  <motion.div whileHover={{ y: -5 }} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#2E8B57]/30 rounded-full blur-[40px] group-hover:bg-[#2E8B57]/50 transition-colors duration-500" />
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <FileText className="text-[#39FF14]" /> <span className="font-medium tracking-wide text-sm uppercase">Publications</span>
+                    </div>
+                    <div className="text-6xl font-black text-white">{publications.length}</div>
+                  </motion.div>
+
+                  {/* Wide Bento Card */}
+                  <div className="md:col-span-2 lg:col-span-3 bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-3xl p-8 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-2">Welcome to the future of Lab Management</h3>
+                      <p className="text-gray-400">The 2026 Premium Asrofi Lab CMS is running optimally.</p>
+                    </div>
+                    <Activity className="w-24 h-24 text-[#39FF14]/20 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            )}
           {/* Team Members Tab */}
           {activeTab === "team" && (
             <div>
@@ -513,7 +586,8 @@ export default function AdminDashboard() {
 
           {/* Settings Tab */}
           {activeTab === "settings" && <SettingsPanel />}
-        </div>
+          </div>
+        </main>
       </div>
 
       {/* Edit Modal */}

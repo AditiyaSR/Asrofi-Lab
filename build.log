@@ -1,0 +1,107 @@
+﻿
+> nextjs_tailwind_shadcn_ts@0.2.0 build
+> prisma generate && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/
+
+node.exe : 
+Environment variables 
+loaded from .env
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (Environmen   
+ t variables loade    
+d from .env:Strin    
+g) [], RemoteExce    
+ption
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v6.19.2) to .\node_modules\@prisma\client in 206ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+ΓÜá Warning: Next.js 
+inferred your 
+workspace root, but 
+it may not be correct.
+ We detected multiple 
+lockfiles and 
+selected the 
+directory of 
+D:\bun.lock as the 
+root directory.
+ To silence this 
+warning, set 
+`turbopack.root` in 
+your Next.js config, 
+or consider removing 
+one of the lockfiles 
+if it's not needed.
+   See https://nextjs.
+org/docs/app/api-refer
+ence/config/next-confi
+g-js/turbopack#root-di
+rectory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * D:\ASROFI\package
+-lock.json
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env.production, .env
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 7.5s
+  Skipping validation of types
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/13) ...
+  Generating static pages using 15 workers (3/13) 
+  Generating static pages using 15 workers (6/13) 
+  Generating static pages using 15 workers (9/13) 
+Γ£ô Generating static pages using 15 workers (13/13) in 553.0ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî ╞Æ /
+Γö£ Γùï /_not-found
+Γö£ Γùï /admin
+Γö£ Γùï /admin/login
+Γö£ ╞Æ /api
+Γö£ ╞Æ /api/auth/login
+Γö£ ╞Æ /api/auth/logout
+Γö£ ╞Æ /api/auth/me
+Γö£ ╞Æ /api/gallery
+Γö£ ╞Æ /api/gallery/[id]
+Γö£ ╞Æ /api/publications
+Γö£ ╞Æ /api/publications/[id]
+Γö£ ╞Æ /api/research-projects
+Γö£ ╞Æ /api/research-projects/[id]
+Γö£ ╞Æ /api/settings
+Γö£ ╞Æ /api/team-members
+Γöö ╞Æ /api/team-members/[id]
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
+'cp' is not 
+recognized as an 
+internal or external 
+command,
+operable program or 
+batch file.

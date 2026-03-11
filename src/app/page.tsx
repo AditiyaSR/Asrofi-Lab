@@ -6,6 +6,7 @@ import TeamSection from '@/components/sections/TeamSection';
 import PublicationsSection from '@/components/sections/PublicationsSection';
 import Footer from '@/components/sections/Footer';
 import ParticleBackgroundClient from '@/components/effects/ParticleBackgroundClient';
+import TextMarquee from '@/components/effects/TextMarquee';
 import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -33,8 +34,8 @@ async function getData() {
     return {
       settings,
       members,
-      projects,
-      publications,
+      projects: projects.map(p => ({ ...p, date: p.date.toISOString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })),
+      publications: publications.map(p => ({ ...p, publicationDate: p.publicationDate.toISOString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })),
       gallery,
     };
   } catch (error) {
@@ -66,6 +67,9 @@ export default async function Home() {
         heroSubtitle={settings?.heroSubtitle}
         logoUrl={settings?.logoUrl}
       />
+
+      {/* Thematic Marquee */}
+      <TextMarquee text="NEXT GENERATION BIOCOMPOSITE RESEARCH • ADVANCING SUSTAINABLE MATERIALS • ASROFI LAB" />
 
       {/* Lab Gallery Section */}
       <GallerySection images={gallery} />

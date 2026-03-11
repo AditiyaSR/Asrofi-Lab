@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/context/ThemeProvider";
 import { LanguageProvider } from "@/context/LanguageContext";
+import CustomCursor from "@/components/effects/CustomCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
           <LanguageProvider>
             {children}
             <Toaster />
+            <CustomCursor />
           </LanguageProvider>
         </ThemeProvider>
       </body>

@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Calendar, ArrowRight, Beaker, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Calendar, ArrowRight, Beaker, CheckCircle, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface ResearchProject {
@@ -20,153 +19,146 @@ interface ResearchSectionProps {
 
 export default function ResearchSection({ projects }: ResearchSectionProps) {
   const { t } = useLanguage();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const x = useTransform(scrollYProgress, [0, 1], ['0%', `-${Math.max(0, projects.length - 1) * 20}%`]);
 
   return (
-    <section id="research" ref={containerRef} className="py-24 relative overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, #1D7018 1px, transparent 0)',
-          backgroundSize: '40px 40px',
-        }} />
+    <section id="research" className="py-24 relative overflow-hidden bg-white/5 dark:bg-black/20">
+      {/* Premium Background Mesh */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#39FF14]/10 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#1D7018]/10 rounded-full blur-[150px] mix-blend-screen" />
       </div>
 
-      {/* Section header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="text-center mb-16 px-4"
-      >
-        <motion.span
-          initial={{ opacity: 0, scale: 0.5 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="inline-block px-4 py-1 rounded-full bg-[#1D7018]/10 text-[#1D7018] text-sm font-medium mb-4"
-        >
-          {t.research.titleHighlight}
-        </motion.span>
-        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-          {t.research.title}{' '}
-          <span className="text-[#39FF14]">{t.research.titleHighlight}</span>
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-          {t.research.subtitle}
-        </p>
-      </motion.div>
-
-      {/* Horizontal scroll timeline */}
-      <div className="sticky top-0 h-[80vh] flex items-center overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section header */}
         <motion.div
-          style={{ x }}
-          className="flex gap-8 px-8 md:px-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
         >
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
-              whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -15, scale: 1.02 }}
-              className="flex-shrink-0 w-[350px] md:w-[400px] group"
-            >
-              <div
-                className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl
-                           rounded-3xl overflow-hidden border border-white/40 dark:border-[#1D7018]/20
-                           group-hover:border-[#39FF14]/50 transition-all duration-700
-                           shadow-xl group-hover:shadow-2xl group-hover:shadow-[#39FF14]/20 h-full"
-              >
-                {/* Cover image area */}
-                <div className="h-48 bg-gradient-to-br from-[#1D7018]/20 to-[#39FF14]/10 relative overflow-hidden group-hover:from-[#1D7018]/30 group-hover:to-[#39FF14]/20 transition-colors duration-700">
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity duration-700"
-                    animate={{ rotate: [0, 360], scale: [1, 1.1, 1] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Beaker className="w-24 h-24 text-[#1D7018]/30 dark:text-[#39FF14]/30" />
-                  </motion.div>
-                  {/* Status badge */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`absolute top-4 right-4 px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2
-                               ${project.status === 'ONGOING'
-                                 ? 'bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14]/50'
-                                 : 'bg-[#1D7018]/20 text-[#1D7018] dark:text-[#2E8B57] border border-[#1D7018]/50'}`}
-                  >
-                    {project.status === 'ONGOING' ? (
-                      <motion.span
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className="w-2 h-2 rounded-full bg-[#39FF14]"
-                      />
-                    ) : (
-                      <CheckCircle size={14} />
-                    )}
-                    {project.status === 'ONGOING' ? t.research.ongoing : t.research.completed}
-                  </motion.div>
-                </div>
+          <motion.span
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-block px-4 py-1 rounded-full border border-[#39FF14]/30 bg-[#1D7018]/10 text-[#1D7018] dark:text-[#39FF14] text-sm font-medium mb-4 backdrop-blur-md"
+          >
+            {t.research.titleHighlight}
+          </motion.span>
+          <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-gray-500 mb-6 tracking-tight">
+            {t.research.title}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1D7018] to-[#39FF14]">
+              {t.research.titleHighlight}
+            </span>
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+            {t.research.subtitle}
+          </p>
+        </motion.div>
 
-                {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500 text-sm mb-3">
-                    <Calendar size={14} />
-                    <span>{new Date(project.date).toLocaleDateString('id-ID', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}</span>
+        {/* Asymmetrical Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[350px]">
+          {projects.map((project, index) => {
+            // Determine Bento box sizes based on index
+            const isFeatured = index === 0; // Large feature box
+            const isWide = index === 3 || index === 6; // Wide box
+
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className={`relative group cursor-pointer ${
+                  isFeatured ? 'md:col-span-2 md:row-span-2' : 
+                  isWide ? 'md:col-span-2 lg:col-span-2' : 
+                  'md:col-span-1 lg:col-span-1'
+                }`}
+              >
+                {/* 3D Perspective Tilt Container */}
+                <div
+                  className="w-full h-full bg-white/10 dark:bg-black/30 backdrop-blur-[30px]
+                             rounded-[2.5rem] overflow-hidden border border-white/20 dark:border-white/10
+                             transition-all duration-700 hover:border-[#39FF14]/40
+                             shadow-2xl hover:shadow-[0_0_50px_rgba(57,255,20,0.15)] noise relative flex flex-col"
+                >
+                  {/* Subtle Inner Glow */}
+                  <div className="absolute inset-0 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-[#39FF14]/10 to-transparent pointer-events-none" />
+
+                  {/* Cover image area */}
+                  <div className={`relative overflow-hidden shrink-0 ${isFeatured ? 'h-1/2' : 'h-48'}`}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1D7018]/30 to-[#39FF14]/10 group-hover:scale-105 transition-transform duration-1000 ease-out" />
+                    
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay"
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+                    >
+                      <Beaker className="w-48 h-48 text-[#39FF14]/20" />
+                    </motion.div>
+
+                    {/* Status badge */}
+                    <div className="absolute top-6 right-6">
+                      <div className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider flex items-center gap-2 backdrop-blur-md
+                                 ${project.status === 'ONGOING'
+                                   ? 'bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14]/50 shadow-[0_0_15px_rgba(57,255,20,0.3)]'
+                                   : 'bg-[#1D7018]/30 text-white border border-[#1D7018]/50'}`}
+                      >
+                        {project.status === 'ONGOING' ? (
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39FF14] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#39FF14]"></span>
+                          </span>
+                        ) : (
+                          <CheckCircle size={14} />
+                        )}
+                        {project.status === 'ONGOING' ? t.research.ongoing : t.research.completed}
+                      </div>
+                    </div>
                   </div>
 
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-[#1D7018] dark:group-hover:text-[#39FF14] transition-colors">
-                    {project.title}
-                  </h3>
+                  {/* Content Area */}
+                  <div className="p-8 flex flex-col flex-grow justify-between z-10">
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-mono text-xs uppercase tracking-widest mb-4">
+                        <Calendar size={14} />
+                        <span>{new Date(project.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                        })}</span>
+                      </div>
 
-                  <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 mb-4">
-                    {project.abstract}
-                  </p>
+                      <h3 className={`font-bold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#39FF14] group-hover:to-[#1D7018] transition-all duration-300
+                                     ${isFeatured ? 'text-3xl' : 'text-xl'}`}>
+                        {project.title}
+                      </h3>
 
-                  <motion.button
-                    whileHover={{ x: 10 }}
-                    className="flex items-center gap-2 text-[#1D7018] dark:text-[#39FF14] text-sm font-medium
-                               group-hover:gap-4 transition-all"
-                  >
-                    {t.research.readMore} <ArrowRight size={16} />
-                  </motion.button>
+                      {/* Only show abstract if it's featured or if there's room, otherwise line-clamp */}
+                      <p className={`text-gray-600 dark:text-gray-300 font-medium ${isFeatured ? 'line-clamp-4 text-lg' : 'line-clamp-2 text-sm'}`}>
+                        {project.abstract}
+                      </p>
+                    </div>
+
+                    <div className="mt-8 flex items-center gap-2 text-[#1D7018] dark:text-[#39FF14] font-bold text-sm tracking-wide group/btn">
+                      {isFeatured ? 'EXPLORE DEEP DIVE' : t.research.readMore}
+                      <ExternalLink size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
 
           {/* Empty state */}
           {projects.length === 0 && (
-            <div className="text-center py-16 text-gray-500 w-full">
-              <Beaker className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p>No research projects available</p>
+            <div className="col-span-full text-center py-24 bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/10 noise">
+              <Beaker className="w-24 h-24 mx-auto mb-6 text-gray-400 dark:text-gray-600 animate-pulse" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Research Data Found</h3>
+              <p className="text-gray-500">The laboratory is currently preparing new publications.</p>
             </div>
           )}
-        </motion.div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="text-center mt-8">
-        <motion.div
-          animate={{ x: [0, 15, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-500"
-        >
-          <span className="text-sm">{t.research.scrollExplore}</span>
-          <ArrowRight size={16} />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
