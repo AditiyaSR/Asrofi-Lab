@@ -10,6 +10,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 interface NavigationProps {
   siteName?: string | null;
+  logoUrl?: string | null;
 }
 
 function getMountSnapshot() {
@@ -20,7 +21,7 @@ function getServerSnapshot() {
   return false;
 }
 
-export default function Navigation({ siteName }: NavigationProps) {
+export default function Navigation({ siteName, logoUrl }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -73,11 +74,12 @@ export default function Navigation({ siteName }: NavigationProps) {
                 transition={{ duration: 0.5 }}
               >
                 <Image
-                  src="/logo.png"
+                  src={logoUrl || "/logo.png"}
                   alt="Asrofi Lab Logo"
                   width={45}
                   height={45}
                   className="drop-shadow-lg"
+                  unoptimized={!!logoUrl}
                 />
               </motion.div>
               <span className="text-gray-900 dark:text-white font-bold text-lg hidden sm:block">

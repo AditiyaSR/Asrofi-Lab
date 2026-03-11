@@ -536,6 +536,7 @@ function SettingsPanel() {
     heroTitle: "",
     heroSubtitle: "",
     aboutText: "",
+    logoUrl: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -553,6 +554,7 @@ function SettingsPanel() {
         heroTitle: data.heroTitle || "",
         heroSubtitle: data.heroSubtitle || "",
         aboutText: data.aboutText || "",
+        logoUrl: data.logoUrl || "",
       });
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -647,6 +649,14 @@ function SettingsPanel() {
             rows={4}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3
                      focus:border-[#39FF14] focus:outline-none transition-colors resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-400 mb-2">Site Logo</label>
+          <ImageUploadField
+            value={settings.logoUrl}
+            onChange={(val) => setSettings({ ...settings, logoUrl: val })}
           />
         </div>
       </div>

@@ -58,12 +58,13 @@ export default async function Home() {
       <ParticleBackgroundClient />
 
       {/* Navigation */}
-      <Navigation siteName={settings?.siteName} />
+      <Navigation siteName={settings?.siteName} logoUrl={settings?.logoUrl} />
 
       {/* Hero Section */}
       <HeroSection
         heroTitle={settings?.heroTitle}
         heroSubtitle={settings?.heroSubtitle}
+        logoUrl={settings?.logoUrl}
       />
 
       {/* Lab Gallery Section */}

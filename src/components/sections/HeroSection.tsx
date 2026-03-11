@@ -8,9 +8,10 @@ import { useLanguage } from '@/context/LanguageContext';
 interface HeroSectionProps {
   heroTitle?: string | null;
   heroSubtitle?: string | null;
+  logoUrl?: string | null;
 }
 
-export default function HeroSection({ heroTitle, heroSubtitle }: HeroSectionProps) {
+export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSectionProps) {
   const { t } = useLanguage();
 
   return (
@@ -149,12 +150,13 @@ export default function HeroSection({ heroTitle, heroSubtitle }: HeroSectionProp
             className="inline-block"
           >
             <Image
-              src="/logo.png"
+              src={logoUrl || "/logo.png"}
               alt="Asrofi Lab Logo"
               width={180}
               height={180}
               className="drop-shadow-2xl"
               priority
+              unoptimized={!!logoUrl}
             />
           </motion.div>
         </motion.div>
