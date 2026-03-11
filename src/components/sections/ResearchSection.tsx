@@ -80,19 +80,19 @@ export default function ResearchSection({ projects }: ResearchSectionProps) {
               className="flex-shrink-0 w-[350px] md:w-[400px] group"
             >
               <div
-                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl
-                           rounded-2xl overflow-hidden border border-gray-200 dark:border-[#1D7018]/30
-                           group-hover:border-[#39FF14]/50 transition-all duration-500
-                           shadow-xl group-hover:shadow-2xl group-hover:shadow-[#39FF14]/10 h-full"
+                className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl
+                           rounded-3xl overflow-hidden border border-white/40 dark:border-[#1D7018]/20
+                           group-hover:border-[#39FF14]/50 transition-all duration-700
+                           shadow-xl group-hover:shadow-2xl group-hover:shadow-[#39FF14]/20 h-full"
               >
-                {/* Cover image */}
-                <div className="h-48 bg-gradient-to-br from-[#1D7018]/20 to-[#39FF14]/10 relative overflow-hidden">
+                {/* Cover image area */}
+                <div className="h-48 bg-gradient-to-br from-[#1D7018]/20 to-[#39FF14]/10 relative overflow-hidden group-hover:from-[#1D7018]/30 group-hover:to-[#39FF14]/20 transition-colors duration-700">
                   <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+                    className="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity duration-700"
+                    animate={{ rotate: [0, 360], scale: [1, 1.1, 1] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                   >
-                    <Beaker className="w-20 h-20 text-[#1D7018]/30" />
+                    <Beaker className="w-24 h-24 text-[#1D7018]/30 dark:text-[#39FF14]/30" />
                   </motion.div>
                   {/* Status badge */}
                   <motion.div

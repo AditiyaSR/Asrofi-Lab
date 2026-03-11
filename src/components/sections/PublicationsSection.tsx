@@ -38,7 +38,6 @@ export default function PublicationsSection({ publications }: PublicationsSectio
       x: 0,
       transition: {
         duration: 0.5,
-        ease: 'easeOut',
       },
     },
   };
@@ -102,14 +101,15 @@ export default function PublicationsSection({ publications }: PublicationsSectio
           >
             {/* Glow effect */}
             <motion.div
-              className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur"
-              style={{ background: 'linear-gradient(135deg, #1D7018, #39FF14)' }}
+              className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"
+              style={{ background: 'linear-gradient(135deg, #1D7018, #39FF14, transparent)' }}
             />
             
             <div
-              className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm
-                         rounded-2xl p-6 border border-gray-200 dark:border-[#1D7018]/30
-                         group-hover:border-[#39FF14]/50 transition-all duration-300 h-full"
+              className="relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl
+                         rounded-3xl p-8 border border-white/40 dark:border-[#1D7018]/20
+                         group-hover:border-[#39FF14]/50 transition-all duration-500 h-full
+                         shadow-xl group-hover:shadow-2xl group-hover:shadow-[#1D7018]/30 flex flex-col"
             >
               {/* Journal badge */}
               <div className="flex items-center gap-2 mb-4">

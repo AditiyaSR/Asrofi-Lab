@@ -40,7 +40,6 @@ export default function TeamSection({ members }: TeamSectionProps) {
       rotateX: 0,
       transition: {
         duration: 0.6,
-        ease: [0.25, 0.1, 0.25, 1],
       },
     },
   };
@@ -106,16 +105,16 @@ export default function TeamSection({ members }: TeamSectionProps) {
           >
             {/* Glow effect */}
             <motion.div
-              className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
-              style={{ background: 'linear-gradient(135deg, #39FF14, #1D7018)' }}
+              className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"
+              style={{ background: 'linear-gradient(135deg, #39FF14, #1D7018, transparent)' }}
             />
             
             {/* Card */}
             <div
-              className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm
-                         rounded-2xl p-6 border border-gray-200 dark:border-[#1D7018]/30
+              className="relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl
+                         rounded-3xl p-6 border border-white/40 dark:border-[#1D7018]/20
                          group-hover:border-[#39FF14]/50 transition-all duration-500 h-full
-                         shadow-lg group-hover:shadow-2xl group-hover:shadow-[#1D7018]/20"
+                         shadow-xl group-hover:shadow-2xl group-hover:shadow-[#1D7018]/30"
             >
               {/* Avatar */}
               <div className="relative mb-6">

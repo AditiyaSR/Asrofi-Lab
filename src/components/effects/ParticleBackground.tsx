@@ -26,17 +26,18 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
   const createParticles = useCallback((width: number, height: number) => {
     const particles: Particle[] = [];
-    const particleCount = Math.min(60, Math.floor((width * height) / 20000));
+    // Increase density slightly for a more full organic feel
+    const particleCount = Math.min(80, Math.floor((width * height) / 15000));
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5 - 0.2,
-        size: Math.random() * 3 + 1,
-        opacity: Math.random() * 0.5 + 0.2,
-        type: Math.random() > 0.7 ? 'node' : 'line',
+        vx: (Math.random() - 0.5) * 0.3, // Slower, more organic movement
+        vy: (Math.random() - 0.5) * 0.3 - 0.1,
+        size: Math.random() * 4 + 1.5, // Slightly larger particles
+        opacity: Math.random() * 0.6 + 0.2,
+        type: Math.random() > 0.6 ? 'node' : 'line',
       });
     }
 
@@ -75,67 +76,84 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
       const particles = particlesRef.current;
       
-      // Draw connections
+      // Draw connections (Organic Fibers)
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 150) {
-            const opacity = (1 - distance / 150) * (isDark ? 0.15 : 0.1);
+          // Increased connection distance for more mesh-like structure
+          if (distance < 180) {
+            const opacity = (1 - distance / 180) * (isDark ? 0.2 : 0.15);
             ctx.beginPath();
             ctx.strokeStyle = `rgba(${primaryColor}, ${opacity})`;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = particles[i].type === 'node' && particles[j].type === 'node' ? 1.5 : 0.5; // Thicker fibers between nodes
+            
+            // Draw slightly curved lines for organic feel
+            const midX = (particles[i].x + particles[j].x) / 2 + Math.sin(Date.now() * 0.001 + i) * 10;
+            const midY = (particles[i].y + particles[j].y) / 2 + Math.cos(Date.now() * 0.001 + j) * 10;
+            
             ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.quadraticCurveTo(midX, midY, particles[j].x, particles[j].y);
             ctx.stroke();
           }
         }
       }
 
       // Draw and update particles
-      particles.forEach((particle) => {
-        // Mouse interaction
+      particles.forEach((particle, idx) => {
+        // Mouse interaction (Repulsion / Attraction)
         const dx = mouseRef.current.x - particle.x;
         const dy = mouseRef.current.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < 200) {
-          const force = (200 - distance) / 200;
-          particle.vx -= (dx / distance) * force * 0.02;
-          particle.vy -= (dy / distance) * force * 0.02;
+        if (distance < 250) {
+          // Gently push particles away but add a swirling motion
+          const force = (250 - distance) / 250;
+          const angle = Math.atan2(dy, dx);
+          particle.vx -= Math.cos(angle) * force * 0.03;
+          particle.vy -= Math.sin(angle) * force * 0.03;
+          
+          // Add swirl
+          particle.vx += Math.sin(angle) * force * 0.02;
+          particle.vy -= Math.cos(angle) * force * 0.02;
         }
+
+        // Cellular drift (Sine wave motion)
+        particle.vx += Math.sin(Date.now() * 0.0005 + idx) * 0.01;
+        particle.vy += Math.cos(Date.now() * 0.0006 + idx) * 0.01;
 
         // Update position
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        // Antigravity effect
-        particle.vy -= 0.001;
+        // Gentle upward drift (like bubbles / cells rising)
+        particle.vy -= 0.0005;
 
-        // Damping
-        particle.vx *= 0.999;
-        particle.vy *= 0.999;
+        // Damping (Friction)
+        particle.vx *= 0.98;
+        particle.vy *= 0.98;
 
-        // Wrap around edges
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
+        // Wrap around edges smoothly
+        if (particle.x < -50) particle.x = canvas.width + 50;
+        if (particle.x > canvas.width + 50) particle.x = -50;
+        if (particle.y < -50) particle.y = canvas.height + 50;
+        if (particle.y > canvas.height + 50) particle.y = -50;
 
-        // Draw particle
+        // Draw particle (Cell / Spore)
         const gradient = ctx.createRadialGradient(
           particle.x,
           particle.y,
           0,
           particle.x,
           particle.y,
-          particle.size * 2
+          particle.size * 2.5 // Slightly larger glow
         );
 
         if (particle.type === 'node') {
           gradient.addColorStop(0, `rgba(${accentColor}, ${particle.opacity})`);
+          gradient.addColorStop(0.5, `rgba(${accentColor}, ${particle.opacity * 0.5})`);
           gradient.addColorStop(1, `rgba(${accentColor}, 0)`);
         } else {
           gradient.addColorStop(0, `rgba(${primaryColor}, ${particle.opacity})`);
@@ -144,17 +162,20 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
 
         ctx.beginPath();
         ctx.fillStyle = gradient;
-        ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+        // Make the cells pulsate slightly
+        const pulsate = Math.sin(Date.now() * 0.002 + idx) * 0.5 + 1;
+        ctx.arc(particle.x, particle.y, particle.size * 2 * (particle.type === 'node' ? pulsate : 1), 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw hexagon for nodes
+        // Draw geometric / cellular nucleus for nodes
         if (particle.type === 'node') {
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(${accentColor}, ${particle.opacity * 0.5})`;
-          ctx.lineWidth = 0.5;
-          const size = particle.size * 1.5;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${particle.opacity * 0.8})`;
+          ctx.lineWidth = 1;
+          const size = particle.size * 1.5 * pulsate;
+          // Draw a more organic shape (hexagon with rounded feels)
           for (let k = 0; k < 6; k++) {
-            const angle = (k * Math.PI) / 3;
+            const angle = (k * Math.PI) / 3 + (Date.now() * 0.0005 * (idx % 2 === 0 ? 1 : -1)); // Slowly rotate
             const hx = particle.x + size * Math.cos(angle);
             const hy = particle.y + size * Math.sin(angle);
             if (k === 0) {
@@ -165,6 +186,12 @@ export default function ParticleBackground({ isDark = true }: ParticleBackground
           }
           ctx.closePath();
           ctx.stroke();
+          
+          // Inner nucleus
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+          ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
         }
       });
 

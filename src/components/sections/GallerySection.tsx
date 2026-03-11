@@ -71,25 +71,25 @@ export default function GallerySection({ images = [] }: { images?: GalleryImage[
                   scale: 1.05, 
                   rotate: 2,
                   zIndex: 10,
-                  transition: { duration: 0.3 }
+                  transition: { duration: 0.5, ease: 'easeOut' }
                 }}
-                className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group bg-black/50"
+                className="relative aspect-[4/3] rounded-3xl overflow-hidden cursor-pointer group bg-white/10 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-[#39FF14]/20 shadow-xl"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.imageUrl} alt={img.caption || 'Gallery Image'} className="w-full h-full object-cover" />
+                <img src={img.imageUrl} alt={img.caption || 'Gallery Image'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 
                 {/* Hover overlay */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+                  className="absolute inset-0 bg-gradient-to-t from-[#1D7018]/90 via-[#1D7018]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6"
                 >
-                  <p className="text-white text-sm font-medium leading-tight">{img.caption || 'Asrofi Lab Documentation'}</p>
+                  <p className="text-white text-lg font-medium leading-tight transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{img.caption || 'Asrofi Lab Documentation'}</p>
                 </motion.div>
 
                 {/* Glow effect on hover */}
                 <motion.div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
-                    boxShadow: `inset 0 0 30px #39FF1450`,
+                    boxShadow: `inset 0 0 50px rgba(57, 255, 20, 0.3)`,
                   }}
                 />
               </motion.div>

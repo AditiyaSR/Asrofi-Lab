@@ -75,56 +75,81 @@ export default function HeroSection({ heroTitle, heroSubtitle, logoUrl }: HeroSe
         </svg>
       </div>
 
-      {/* Floating icons */}
+      {/* Floating icons with more organic motion */}
       <motion.div
-        className="absolute top-1/4 left-1/4 text-[#1D7018]/10 dark:text-[#1D7018]/20"
+        className="absolute top-1/4 left-[15%] text-[#1D7018]/15 dark:text-[#39FF14]/20 backdrop-blur-sm p-4 rounded-full border border-[#1D7018]/10"
         animate={{
-          y: [0, -30, 0],
-          rotate: [0, 15, 0],
-          scale: [1, 1.1, 1],
+          y: [0, -40, 0],
+          x: [0, 20, 0],
+          rotate: [0, 90, 0],
+          scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 6,
+          duration: 8,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
+        style={{ boxShadow: '0 0 40px rgba(57, 255, 20, 0.1)' }}
       >
-        <Atom size={80} />
+        <Atom size={90} />
       </motion.div>
 
       <motion.div
-        className="absolute bottom-1/4 right-1/4 text-[#39FF14]/5 dark:text-[#39FF14]/10"
+        className="absolute bottom-1/4 right-[10%] text-[#39FF14]/20 dark:text-[#39FF14]/20 backdrop-blur-sm p-6 rounded-full border border-[#39FF14]/10"
         animate={{
-          y: [0, 30, 0],
-          rotate: [0, -15, 0],
-          scale: [1, 1.15, 1],
+          y: [0, 50, 0],
+          x: [0, -30, 0],
+          rotate: [0, -45, 0],
+          scale: [1, 1.3, 1],
         }}
         transition={{
-          duration: 7,
+          duration: 10,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
+        style={{ boxShadow: '0 0 50px rgba(29, 112, 24, 0.2)' }}
       >
-        <Leaf size={100} />
+        <Leaf size={110} />
       </motion.div>
 
       <motion.div
-        className="absolute top-1/3 right-1/3 text-[#1D7018]/5 dark:text-[#1D7018]/15"
+        className="absolute top-1/3 right-[20%] text-[#1D7018]/15 dark:text-[#1D7018]/30 backdrop-blur-sm p-4 rounded-full"
         animate={{
-          y: [0, -20, 0],
+          y: [0, -25, 0],
           rotate: [0, 360],
+          scale: [1, 1.1, 1]
         }}
         transition={{
-          duration: 25,
+          duration: 20,
           repeat: Infinity,
           ease: 'linear',
         }}
       >
-        <Settings size={60} />
+        <Settings size={70} />
+      </motion.div>
+      
+      {/* Additional Biocomposite Element */}
+      <motion.div
+        className="absolute bottom-1/3 left-[20%] text-[#2E8B57]/15 dark:text-[#39FF14]/15"
+        animate={{
+          y: [0, 30, 0],
+          rotate: [0, 180],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
       </motion.div>
 
       {/* Main content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto
+                      bg-white/30 dark:bg-black/20 backdrop-blur-xl rounded-3xl p-8 md:p-12
+                      border border-white/20 dark:border-[#39FF14]/10 shadow-2xl">
         {/* Logo */}
         <motion.div
           initial={{ scale: 0, opacity: 0, rotate: -180 }}
